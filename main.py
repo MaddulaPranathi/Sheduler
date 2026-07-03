@@ -5,6 +5,7 @@ from chatbot import parse_input
 from db import init_db,add_reminder
 init_db()
 def remind(task):
+    print(f"⏰ Reminder triggered: {task}")
     notification.notify(
         title="Reminder",
         message=task,
