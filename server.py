@@ -6,7 +6,6 @@ from typing import Any
 
 import schedule
 from flask import Flask, jsonify, request, send_from_directory
-from plyer import notification
 
 from chatbot import parse_input
 from db import init_db, add_reminder
@@ -17,16 +16,12 @@ def create_app() -> Flask:
 
     init_db()
 
+    # Store reminders in memory so frontend can fetch them
+    reminders: list[str] = []
+
     def remind(task: str) -> None:
         print(f"⏰ Reminder triggered: {task}")
-        try:
-            notification.notify(
-                title="Reminder",
-                message=task,
-                timeout=10,
-            )
-        except Exception as e:  # pragma: no cover
-            print("Notification error:", e)
+        reminders.append(task)
 
     def scheduler_loop() -> None:
         while True:
@@ -42,7 +37,7 @@ def create_app() -> Flask:
 
     @app.get("/")
     def index():
-        # Serve your index.html instead of app.html
+        # Serve your index.html
         return send_from_directory(app.root_path, "index.html")
 
     @app.post("/add_reminder")
@@ -64,6 +59,11 @@ def create_app() -> Flask:
         print(f"BOT: Reminder saved for '{task} at {parsed_time}'")
 
         return jsonify({"ok": True, "task": task, "time": parsed_time})
+
+    @app.get("/get_reminders")
+    def get_reminders():
+        # Frontend can poll this to show notifications
+        return jsonify(reminders)
 
     @app.get("/style.css")
     def style_css():
