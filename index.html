@@ -14,6 +14,19 @@
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
-    <script src="/script.js"></script>
+    <script src="/script.js">
+function showNotification(task) {
+    if (Notification.permission === "granted") {
+        new Notification("Reminder", { body: task });
+    } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                new Notification("Reminder", { body: task });
+            }
+        });
+    }
+}
+
+</script>
 </body>
 </html>
