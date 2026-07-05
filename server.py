@@ -26,7 +26,6 @@ def create_app() -> Flask:
                 timeout=10,
             )
         except Exception as e:  # pragma: no cover
-            # Avoid crashing the scheduler thread
             print("Notification error:", e)
 
     def scheduler_loop() -> None:
@@ -43,7 +42,8 @@ def create_app() -> Flask:
 
     @app.get("/")
     def index():
-        return send_from_directory(app.root_path, "app.html")
+        # Serve your index.html instead of app.html
+        return send_from_directory(app.root_path, "index.html")
 
     @app.post("/add_reminder")
     def add_reminder_endpoint():
@@ -51,11 +51,9 @@ def create_app() -> Flask:
         user_text = str(data.get("task", "")).strip()
         time_str = str(data.get("time", "")).strip()
 
-        # If UI sends full text, parse it.
         if not time_str:
             task, parsed_time = parse_input(user_text)
         else:
-            # UI sends task/time separately.
             task, parsed_time = user_text, time_str
 
         if not task or not parsed_time:
@@ -67,7 +65,6 @@ def create_app() -> Flask:
 
         return jsonify({"ok": True, "task": task, "time": parsed_time})
 
-    # Serve static files
     @app.get("/style.css")
     def style_css():
         return send_from_directory(app.root_path, "style.css")
@@ -79,9 +76,9 @@ def create_app() -> Flask:
     return app
 
 
-if __name__ == "__main__":
-    app = create_app()
-    # Access from browser on the same machine
-    app.run(host="127.0.0.1", port=5000, debug=True)
-
+# Expose app for Gunicorn
 app = create_app()
+
+if __name__ == "__main__":
+    # Local testing
+    app.run(host="127.0.0.1", port=5000, debug=True)
