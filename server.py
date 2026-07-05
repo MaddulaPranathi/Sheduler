@@ -84,3 +84,4 @@ if __name__ == "__main__":
     # Access from browser on the same machine
     app.run(host="127.0.0.1", port=5000, debug=True)
 
+app = create_app()
