@@ -9,7 +9,7 @@ function sendMessage() {
     userMsg.textContent = "You: " + userText;
     chatBox.appendChild(userMsg);
 
-    // Use your Render backend URL instead of localhost
+    // Call your Render backend
     fetch("https://sheduler-1.onrender.com/add_reminder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -20,6 +20,17 @@ function sendMessage() {
         const botMsg = document.createElement("div");
         if (ok) {
             botMsg.textContent = `Bot: Reminder Saved for '${data.task}' at ${data.time}`;
+
+            // 🔔 Show browser notification
+            if (Notification.permission === "granted") {
+                new Notification("Reminder", { body: `${data.task} at ${data.time}` });
+            } else {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Reminder", { body: `${data.task} at ${data.time}` });
+                    }
+                });
+            }
         } else {
             botMsg.textContent = `Bot: ${data.error || 'Invalid input'}`;
         }
