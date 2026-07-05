@@ -1,4 +1,4 @@
-function sendMessage(){
+function sendMessage() {
     const input = document.getElementById("user-input");
     const chatBox = document.getElementById("chat-box");
     const userText = input.value;
@@ -9,8 +9,8 @@ function sendMessage(){
     userMsg.textContent = "You: " + userText;
     chatBox.appendChild(userMsg);
 
-    // Expect userText like: remind me to <task> at HH:MM
-    fetch("http://127.0.0.1:5000/add_reminder", {
+    // Use your Render backend URL instead of localhost
+    fetch("https://sheduler-1.onrender.com/add_reminder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task: userText })
@@ -36,4 +36,3 @@ function sendMessage(){
         console.error(err);
     });
 }
-
